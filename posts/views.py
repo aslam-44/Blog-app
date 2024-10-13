@@ -3,7 +3,7 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import  JsonResponse, HttpResponse
-
+from django.core.paginator import *
 from posts.forms import PostForm
 from posts.models import *
 
@@ -75,7 +75,6 @@ def post_detail(request, id):
         
     }
     return render(request, 'posts/post.html', context=context)
-
 @login_required(login_url="/users/login/")
 def my_posts(request):
     instances = Post.objects.filter(author__user = request.user , is_deleted = False)
@@ -84,3 +83,29 @@ def my_posts(request):
         "instances" : instances,
     }
     return render(request, 'posts/my-posts.html', context=context)
+
+@login_required(login_url="/users/login/")
+def delete_post(request, id):
+    instance = get_object_or_404(Post, id=id, author__user=request.user)  # Ensure the post exists and belongs to the user
+    instance.is_deleted = True
+    instance.save()
+
+    response_data = {
+        "title": "Successfully Deleted",
+        "message": "Post is deleted",
+        "status": "success",
+    }
+    return JsonResponse(response_data)  # Use JsonResponse to return JSON data
+
+@login_required(login_url="/users/login/")
+def draft_post(request, id):
+    instance = get_object_or_404(Post, id=id, author__user=request.user)  # Ensure the post exists and belongs to the user
+    instance.is_draft = not instance.is_draft
+    instance.save()
+
+    response_data = {
+        "title": "Successfully Changed",
+        "message": "Post is updated successfully",
+        "status": "success",
+    }
+    return JsonResponse(response_data)  # Use JsonResponse to return JSON data
