@@ -95,11 +95,11 @@ def delete_post(request, id):
         "message": "Post is deleted",
         "status": "success",
     }
-    return JsonResponse(response_data)  # Use JsonResponse to return JSON data
+    return JsonResponse(response_data)
 
 @login_required(login_url="/users/login/")
 def draft_post(request, id):
-    instance = get_object_or_404(Post, id=id, author__user=request.user)  # Ensure the post exists and belongs to the user
+    instance = get_object_or_404(Post, id=id, author__user=request.user)  
     instance.is_draft = not instance.is_draft
     instance.save()
 
@@ -108,4 +108,62 @@ def draft_post(request, id):
         "message": "Post is updated successfully",
         "status": "success",
     }
-    return JsonResponse(response_data)  # Use JsonResponse to return JSON data
+    return JsonResponse(response_data) 
+@login_required(login_url="/users/login/")
+def edit_post(request, id):
+    instance = get_object_or_404(Post, id=id, author__user=request.user)
+    
+    if request.method == 'POST':
+        print(request.POST)  # Print the request data
+        print(request.FILES)  # Print the request files
+        form = PostForm(request.POST, request.FILES, instance=instance)  # Pass the instance here
+        
+        if form.is_valid():
+            tags = form.cleaned_data['tags']
+            
+            if not Author.objects.filter(user=request.user).exists():
+                author = Author.objects.create(user=request.user, name=request.user.username)
+            else:
+                author = request.user.author
+
+            instance = form.save(commit=False)
+            instance.save()
+
+            tags_list = tags.split(",")
+            
+            # Clear existing categories and add new ones
+            instance.category.clear()
+            for tag in tags_list:
+                category, created = Category.objects.get_or_create(title=tag.strip())
+                instance.category.add(category)
+
+            response_data = {
+                "title": "Post Created successfully",
+                "message": "Post is uploaded",
+                "status": "success",
+                "redirect": "yes",
+                "redirect_url": "/",
+            }
+        else:
+            # Form is invalid, return an error response
+            response_data = {
+                "title": "Post Creation Failed",
+                "message": "Please correct the errors in the form.",
+                "status": "error",
+            }
+            print(form.errors)  # Print the form errors
+        return HttpResponse(json.dumps(response_data))
+
+    else:
+        # Get categories from the post instance
+        categories = instance.category.all()
+        category_string = ",".join([category.title for category in categories])
+
+        form = PostForm(instance=instance, initial={"tags": category_string})
+        context = {
+            "title": "Edit post",
+            "form": form,
+        }
+        return render(request, "posts/create.html", context=context)
+
+
