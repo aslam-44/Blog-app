@@ -2,11 +2,13 @@ import datetime
 import json
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import  JsonResponse, HttpResponse
-from django.core.paginator import *
+from django.http import JsonResponse, HttpResponse
+from django.core.paginator import Paginator
 from posts.forms import PostForm
-from posts.models import *
+from posts.models import Post, Author, Category
+from main.decorators import allow_self
 
+# Rest of your code remains the same
 @login_required(login_url="/users/login/")
 def create_post(request):
     if request.method == 'POST':
@@ -39,7 +41,7 @@ def create_post(request):
                 "redirect": "yes",
                 "redirect_url": "/",
             }
-    
+
         else:
             # Form is invalid, return an error response
             response_data = {
@@ -66,6 +68,7 @@ def create_post(request):
         return render(request, "posts/create.html", context=context)
 
 
+
 def post_detail(request, id):
     post = get_object_or_404(Post, id=id)
     
@@ -85,6 +88,8 @@ def my_posts(request):
     return render(request, 'posts/my-posts.html', context=context)
 
 @login_required(login_url="/users/login/")
+@allow_self
+
 def delete_post(request, id):
     instance = get_object_or_404(Post, id=id, author__user=request.user)  # Ensure the post exists and belongs to the user
     instance.is_deleted = True
@@ -98,6 +103,7 @@ def delete_post(request, id):
     return JsonResponse(response_data)
 
 @login_required(login_url="/users/login/")
+@allow_self
 def draft_post(request, id):
     instance = get_object_or_404(Post, id=id, author__user=request.user)  
     instance.is_draft = not instance.is_draft
@@ -110,6 +116,7 @@ def draft_post(request, id):
     }
     return JsonResponse(response_data) 
 @login_required(login_url="/users/login/")
+@allow_self
 def edit_post(request, id):
     instance = get_object_or_404(Post, id=id, author__user=request.user)
     
