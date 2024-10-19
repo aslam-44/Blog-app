@@ -1,9 +1,12 @@
 import datetime
 import json
+import random 
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
+
 from posts.forms import PostForm
 from posts.models import Post, Author, Category
 from main.decorators import allow_self
@@ -174,3 +177,5 @@ def edit_post(request, id):
         return render(request, "posts/create.html", context=context)
 
 
+def reading_time():
+    return random.randint(6,15)
