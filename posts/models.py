@@ -8,7 +8,7 @@ class Author(models.Model):
          return self.name
         
 class Category(models.Model):
-       title = models.CharField(max_length=25)
+       title = models.CharField(max_length=255)
 
        class Meta:
              verbose_name_plural = ("Categories")
@@ -21,7 +21,7 @@ class Post(models.Model):
         short_description = models.TextField()
         description = models.TextField()
         category = models.ManyToManyField("posts.Category")
-        time_to_read = models.CharField(max_length=100)
+        time_to_read = models.CharField(max_length=500)
         featured_image = models.ImageField(upload_to="posts/")
         is_draft = models.BooleanField(default=False)
 
