@@ -30,8 +30,8 @@
                 </div>
               </a>
               <div class="bottom">
-                {% for tag in post.categories.all %}
-                <a href="#" class="design {% cycle 'one' 'two' 'three' %}">{{ tag.title }}</a>
+                {% for category in post.category.all %}
+                <a href="#" class="design {% cycle 'one' 'two' 'three' %}">{{ category.title  }}</a>
                 {% endfor %}
               </div>
             </li>
