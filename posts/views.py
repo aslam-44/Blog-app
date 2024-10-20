@@ -1,6 +1,6 @@
+
 import datetime
 import json
-import random 
 
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -177,5 +177,3 @@ def edit_post(request, id):
         return render(request, "posts/create.html", context=context)
 
 
-def reading_time():
-    return random.randint(6,15)

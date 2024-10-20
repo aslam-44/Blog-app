@@ -6,7 +6,6 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.contrib.auth.models import User
 from posts.models import Author, Post, Category
-from posts.views import random_time
 
 class Command(BaseCommand):
     help = 'Import posts from a CSV file'
@@ -28,10 +27,10 @@ class Command(BaseCommand):
                 date = row[3]
                 tags = row[5]
                 title = row[6]
-                image = "https://placehold.co/600x400"
+                featured_image = "https://picsum.photos/1500/1000"
                 file_name = f'{uuid.uuid4()}.jpg'
                 image_path = f'{settings.BASE_DIR}/media/posts/{file_name}'
-                wget.download(image, image_path)
+                wget.download(featured_image, image_path)
                 uploaded_file_url = f'posts/{file_name}'
 
                 # Check if author exists
