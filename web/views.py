@@ -1,7 +1,7 @@
 from django.shortcuts import render,get_object_or_404
 from django.core.paginator import *
 from posts.models import *
-
+from django.contrib.postgres.search import *
 
 def index(request):
     categories = Category.objects.all()[:5]
@@ -10,8 +10,9 @@ def index(request):
     posts = Post.objects.filter(is_deleted=False, is_draft=False)
     q = request.GET.get('q')
     if q:
-        posts = posts.filter(title__icontains=q)
-
+        vector = SearchVector("title",weight="A")+SearchVector("author__name",weight="B")+SearchVector("category__title",weight="C")
+        query = SearchQuery(q)
+        posts = posts.annotate( rank =SearchRank(vector,query)).filter(rank__gte=0.0001).order_by("-rank")
     # Filtering by author
     search_authors = request.GET.getlist("author")
     if search_authors:
