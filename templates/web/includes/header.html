@@ -1,25 +1,41 @@
- {% load static %}
- <header>
-    <h1>
+{% load static %}
+<header>
+    <h1 class="left">
         <a href="{% url 'web:index' %}">
-            <img src="{% static './images/icons/blog-logo.svg'%}" alt="Logo">
+            <img src="{% static './images/icons/blog-logo.svg' %}" alt="Logo">
         </a>
     </h1>
-    <div class="user-section">
-    
+
+    <nav class="menu">
+        <ul>
             {% if request.user.is_authenticated %}
-            <a href="{% url 'posts:create_post' %}" class="login my-posts">
-                Create
-            </a>
-            <a href="{% url 'posts:my_posts' %}" class="login my-posts">
-                My posts
-            </a>
-            <a href="{% url 'users:logout' %}" class="login">Logout</a>
+                <li><a href="{% url 'posts:create_post' %}">Create</a></li>
+                <li><a href="{% url 'posts:my_posts' %}">My posts</a></li>
+                <li><a href="{% url 'users:logout' %}">Logout</a></li>
             {% else %}
-            <a href="{% url 'users:login' %}" class="login">Login</a>
+                <li><a href="{% url 'users:login' %}"">Login</a></li>
             {% endif %}
+        </ul>
+    </nav>
+
+    <div id="menu-icon">
+        <img src="{% static './images/icons/menu.svg' %}" alt="Menu">
     </div>
-    <div id="hamburger-icon">
-        <img src="{% static './images/icons/hamburger.svg'%}" alt="Hamburger">
+
+    <div id="mobile-menu">
+        <ul>
+            {% if request.user.is_authenticated %}
+                <li><a href="{% url 'posts:create_post' %}">Create</a></li>
+                <li><a href="{% url 'posts:my_posts' %}">My posts</a></li>
+                <li><a href="{% url 'users:logout' %}">Logout</a></li>
+            {% else %}
+                <li><a href="{% url 'users:login' %}"">Login</a></li>
+            {% endif %}
+        </ul>
     </div>
+
+    <span class="close">
+        <img src="{% static './images/icons/close.svg' %}" alt="Close">
+    </span>
+    <span class="overlay"></span>
 </header>

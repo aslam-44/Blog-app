@@ -72,7 +72,8 @@
         </div>
         <p class="filter-head">Categories</p>
 <div class="filter">
-  {% for category in categories %}
+  {% for category in post.category.all %}
+
   <label class="checkbox">
     <input type="checkbox" name="category" value="{{ category.id }}"
            {% if category.id|stringformat:"s" in request.GET.getlist.category %} checked {% endif %} />
